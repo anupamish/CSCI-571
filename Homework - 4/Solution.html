@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Homework 4
+        </title>
+        <style>
+            *{
+                font-family: Arial, Helvetica, sans-serif;
+            }
+            .para{
+                line-height: 200px;
+            }
+             
+        </style>
+        <script>
+            function generateHTML(jsonDoc){
+                var checkempty = JSON.stringify(jsonDoc);
+                var count = true;
+                if (checkempty==JSON.stringify({})){
+                     window.alert("Empty JSON file!")
+                     count = false;
+                }else{
+                if(typeof(jsonDoc.Mainline.Table.Row)==='undefined'){
+                    window.alert("No Airline Data to display!");
+                    count = false;
+                }
+                else{
+                html_text+="<HTML><HEAD><TITLE> JSON FILE OUTPUT </TITLE></HEAD><BODY><CENTER>";
+                html_text+="<TABLE BORDER='2'><tr>";               
+                var airlinesHeader = jsonDoc.Mainline.Table.Header.Data;
+                var airlinesHeaderIterate = Object.keys(airlinesHeader);
+                for( var i in airlinesHeaderIterate){
+                    header_print = airlinesHeader[i];
+                    html_text+="<th>"+header_print+"</th>"
+                }
+                html_text+="</tr>";
+                }
+                }
+                              
+                var airlinesData = jsonDoc.Mainline.Table.Row;
+                for(i=0;i<airlinesData.length;i++){
+                    var data = airlinesData[i];
+                    html_text+="<tr>";
+                    var keys_data = Object.keys(data);
+                    for (var j in keys_data){
+                        prop = keys_data[j];
+                        if(prop === "Plane"){
+                            html_text+= "<td><img src='"+ data[prop]+"'height='160' width='320'></td>";
+                        }else if(prop === "HomePage"){
+                            html_text+= "<td><a href='"+ data[prop]+"'/>"+ data[prop]+"</td>";
+                        }else if(prop === "Hubs"){
+                            var hubs = data[prop];
+                            var keys_hubs = Object.keys(hubs);
+                            html_text+="<td><ul>";
+                            for(var k in keys_hubs){
+                                for(var hub_index in hubs[keys_hubs[k]]) {
+                                    if (k === "0" && hub_index === "0") {
+                                        html_text+= "<li><b>"+ hubs[keys_hubs[k]][hub_index] +"</b></li>";
+                                    } else {
+                                    html_text+= "<li>"+ hubs[keys_hubs[k]][hub_index] +"</li>";
+                                }
+                            }
+                            }
+                            html_text+="</ul></td>";
+                            
+                        }  else{
+                            html_text+= "<td>"+data[prop]+"</td>";
+                        }
+                    } 
+                    html_text+="</tr>";
+                }
+                html_text+="</table></center><noscript></body></html>";
+                return count;
+            }
+            
+            
+            function sampleFunction(what){
+                var html_text="";
+                var URL = what.URL.value;
+                function loadJSON(url){
+                    if(window.XMLHttpRequest){
+                        xmlhttp = new XMLHttpRequest();
+                    }else{
+                        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+                    }
+                    xmlhttp.open("GET",url,false);
+                    xmlhttp.send();
+                    if (xmlhttp.status==0 || xmlhttp.status==200){
+                        usefulResponse = xmlhttp.responseText;
+                        jsonDoc = JSON.parse(usefulResponse);
+                        return jsonDoc;
+                    }else{
+                        window.alert("File does not exist!");
+                    }
+                    
+                }
+                jsonDoc = loadJSON(URL);
+                if	(window.ActiveXObject)
+                {		
+                    if	(jsonObj.parseError.errorCode !=0)	
+                    {
+                        var myErr =	jsonObj.parseError;
+                        generateError(jsonDoc);
+                        neWin =	window.open("",	"Error");
+                        neWin.document.write(html_text);
+                     }	else
+                     {		
+                         count = generateHTML(jsonDoc);
+                         if(count){
+                         neWin =	window.open("",	"Assignment4",'_blank');
+                         neWin.document.write(html_text);	}	
+                    }	
+               }else
+               {		
+                   jsonDoc.onload=generateHTML(jsonDoc);
+                   count = jsonDoc.onload;
+                   if (count){
+                   neWin =	window.open("",	"Assignment4",'_blank');
+                   neWin.document.write(html_text);		}
+                }
+                    neWin.document.close();		
+            }
+           
+         </script>
+    </head>
+    <body>
+        <p class="para" >
+            <br>
+        </p>
+        <center>
+            <h3> Enter URL for Airlines List JSON File</h3>
+            <form name="myform" method="POST" id="location">
+              <input type="text" name="URL" maxlength="255" size="100" required>
+              <br />
+              <br />
+              <input type="submit" name="submit" value="Submit Query" onClick="sampleFunction(this.form)" />
+              </form>
+                
+        </center>   
+        <noscript>
+    </body>
+
+</html>
+
