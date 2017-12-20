@@ -1,0 +1,376 @@
+<div>
+  <br>
+  <br>
+  <br>
+  <br>
+</div>
+<div class="container">
+  <div class="well" style="background-color:white;">
+    <h3 style="text-align:center; margin-bottom:15px;"> Stock Market Search </h3>
+    <form class="form-inline">
+      <div [ngClass]="{'form-group': true, 'has-error': invalidTicker}">
+        <label for="exampleInputName2" style='font-size:15px; margin-right:25px;'>Enter Stock Ticker Symbol:
+          <span style="color: red">*</span>
+        </label>
+        <input class="form-control" size="90" placeholder="e.g. AAPL" [(ngModel)]="stockTicker" ng-class="{red: test.myStock.$invalid}"
+          style="margin-right:10px; font-size:15x;" matInput [matAutocomplete]="auto" [formControl]="stateCtrl" required>
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let state of states" [value]="state.Symbol">
+            <span>{{state.Symbol}} - {{state.Name}} ({{state.Exchange}})</span>
+          </mat-option>
+        </mat-autocomplete>
+
+      </div>
+      <button type="button" (click)=getStockData() class="btn btn-default btn-lg" style="background-color:#7D95AF; color:white; margin-right:5px;">
+        <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Get Quote
+      </button>
+      <button type="button" class="btn btn-default btn-lg" style="background-color:#EEEEEE;color:black;" (click)="clear()">
+        <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Clear
+      </button>
+    </form>
+  </div>
+ </div>
+<hr style="background-color:white; width:78%;">
+<div class="container">
+<div class="well" style='background-color:white;'>
+    
+  <ngx-carousel  [inputs]="carouselOne">
+      <ngx-item NgxCarouselItem>
+          <div class="card">
+              <div class="card-header">
+                <div class="row">
+                        <div class="col-md-8"> <h3 style="text-align:left;">Favorite List</h3> </div>
+                        <div class="col-md-4">
+                        <div class="row">
+                          <div class="col-xs-3">
+                          <span class="float-right"style="font-size:12px; margin-right:2px;">Auto Refresh:</span>
+                          </div>
+                          <div class="col-3 col-xs-3">
+                          <mat-slide-toggle color=blue [checked]="refresh"  (change)="refresh = $event.checked"></mat-slide-toggle>
+                          </div>
+                          <div class="col-3 col-xs-3">
+                          <button  (click)="autoRefresh()" class="float-none"type="button" style="background-color:#EEEEEE; margin-right:20px; font-size:18px;">
+                          <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                          </button>
+                          </div>
+                          <div class="col-3 col-xs-3">
+                          <button NgxCarouselNext  class="float-none rightRS"type="button" style="background-color:#EEEEEE;font-size:18px;" [disabled]="stockTicker.length == 0">
+                          <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                          </button>
+                          </div>
+                        </div>
+                      </div>
+
+                </div>
+                </div>
+                <div class="card-block">
+                    <div class="row" style="margin-left:2%;">
+                        <mat-form-field style="margin-right:5%;">
+                          <label>Sort By </label> 
+                          <mat-select  [(value)]="sortBy">
+                            <mat-option value="default">Default</mat-option>
+                            <mat-option value="symbol">Symbol</mat-option>
+                            <mat-option value="price">Price</mat-option>
+                            <mat-option value="change">Change</mat-option>
+                            <mat-option value="change_percent">Change Percent</mat-option>
+                            <mat-option value="volume">Volume</mat-option>
+                          </mat-select>   
+                        </mat-form-field>
+                        
+                        <mat-form-field>     
+                            <label>Order By </label>         
+                          <mat-select [(value)]="orderBy" [disabled]="sortBy == 'default'">
+                            <mat-option value="asc">Ascending</mat-option>
+                            <mat-option value="desc">Descending</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="row">
+                      <table style="font-size:13px; margin-left:3%;"class="table table-striped table-responsive">
+                        <thead>
+                          <tr>
+                          <th> Symbol</th>
+                          <th>Stock Price</th>
+                          <th>Change (Change Percent)</th>
+                          <th> Volume </th>
+                          <th></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let item of savedItems | orderBy: sortBy : orderBy == 'desc'">
+                            <td><a href="#" (click)="handler(setStockTicker(item.symbol),getStockData())">{{item.symbol}}</a></td>
+                            <td>{{item.price}}</td>
+                            <td><font color={{item.color}}>{{item.change}} ({{item.change_percent}}%) </font><img src='{{item.image}}' style='width:15px;height:15px;'></td>
+                            <td>{{item.volume|number}}</td>
+                            <td>
+                              <button (click)="deleteFavourite(item)" class="float-none"type="button">
+                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                              </button></td>
+                          </tr>
+
+                        </tbody>
+                       </table>
+                    </div>
+                </div>
+          </div>
+        </ngx-item>
+        <ngx-item NgxCarouselItem>
+            <div class="card">
+                <div class="card-header">
+                  <div class="row">
+                  <div class="col-1">
+                      <button NgxCarouselPrev  class="float-none leftRs"type="button" style="background-color:#EEEEEE;font-size:18px;">
+                          <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                          </button>
+                  </div>
+                  <div class="col-11"> <h3 style="text-align:center">Stock Details</h3> </div>
+                  </div>
+                </div>
+                <div class="card-block" style="padding:10px;">
+                  <div class="mynav" style='font-size:15px; color:#4979B2;'>
+                    <ul class="nav nav-pills tryme">
+                      <li class="nav-item">
+                        <a class="nav-link" href="#current" data-toggle="tab">
+                          <span class='glyphicon glyphicon-time' style='margin-right:2px;'></span>Current Stock</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#history" (click)="printHistoryChart(historyStock)" data-toggle="tab">
+                          <span class='glyphicon glyphicon-stats' style='margin-right:2px;'></span>Historical Charts</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#news" data-toggle="tab">
+                          <span class='glyphicon glyphicon-link' style='margin-right:2px;'></span> News Feeds</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <hr>
+                  <div class="tab-content">
+                  <div class="tab-pane active" id="current">
+                  <div class="row">
+                    <div class="col-md-5" style="font-size:12px;">
+                  <table class="table table-striped table-responsive">
+                    <thead>
+                      <tr>
+                        <th>Stock Details</th>
+                        <th>
+                          <div class='container'>
+                          <div class='row'>
+                            <div class="col-xs-6">
+                        <button *ngIf="!isThere"(click)="saveFavorites()" class="float-none"type="button" style="background-color:#EEEEEE; font-size:18px; margin-right:25px;" [disabled]="loadingData || !stockDetails.symbol">
+                            <span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span>
+                        </button>
+                        <button *ngIf="isThere"  class="float-none"type="button" style="background-color:#EEEEEE; font-size:18px; margin-right:5px;" [disabled]="loadingData || !stockDetails.symbol">
+                            <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                        </button>
+                          </div>
+                          <div class="col-xs-6">
+                          <input (click)="fbAction()" type ="button" [disabled]="loadingGraphs || !indicatorData.Price || !indicatorData.SMA || !indicatorData.EMA || !indicatorData.RSI || !indicatorData.CCI || !indicatorData.MACD || !indicatorData.STOCH1 || !indicatorData.BBANDSLower || !indicatorData.ADX" style=" background:url('http://cs-server.usc.edu:45678/hw/hw8/images/facebook.png') no-repeat; background-size: 100%; width: 3em;  height: 3em;">
+                        </div>
+                        </div>
+                        </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <div *ngIf='priceError' style="padding-top:100px;">
+                    <div  class="alert alert-danger" style="width:100%;" role="alert">
+                        <strong>Error!</strong> Stock data not available.
+                    </div>
+                    </div>
+                    <div *ngIf='loadingData' style="padding-top:100px; width:auto;">
+                      <div class="progress" >
+                      <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%; height:100%;"></div>
+                      </div>
+                    </div>
+                    <tbody *ngIf="stockDetails.symbol && !loadingData && !priceError">
+                      <tr>
+                          <th scope="row">Stock Ticker Symbol</th>
+                          <td>{{stockDetails.symbol}}</td>
+                      </tr>
+                      <tr>
+                          <th scope="row">Last Price</th>
+                          <td>{{stockDetails.last_price}}</td>
+                      </tr>
+                      <tr>
+                          <th scope="row">Change (Change Percent)</th>
+                          <td><font color={{stockDetails.color}}>{{stockDetails.change}} ({{stockDetails.change_percent}}%) </font><img src='{{stockDetails.image}}' style='width:15px;height:15px;'></td>
+                      </tr>
+                      <tr>
+                          <th scope="row">Timestamp</th>
+                          <td>{{stockDetails.timestamp}}</td>
+                      </tr>
+                      <tr>
+                          <th scope="row">Open</th>
+                          <td>{{stockDetails.open}}</td>
+                      </tr>
+                      <tr>
+                          <th scope="row">Close</th>
+                          <td>{{stockDetails.close}}</td>
+                      </tr>
+                      <tr>
+                          <th scope="row">Day's Range</th>
+                          <td>{{stockDetails.low}} - {{stockDetails.high}}</td>
+                      </tr>
+                      <tr>
+                          <th scope="row">Volume</th>
+                          <td>{{stockDetails.volume|number}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  </div>
+                  <div class=" col-md-7">
+                    <div>
+                    <ul class="nav nav-tabs">
+                      <li class="nav-item">
+                        <a class="nav-link active" href="#price"  (click)="printPrice(priceStock,volumeStock)" data-toggle="tab">Price</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#sma" (click)="printSMA(smaData)" data-toggle="tab">SMA</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#ema"(click)="printEMA(emaData)" data-toggle="tab">EMA</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link"  href="#stoch" (click)="printSTOCH(stochData1,stochData2)" data-toggle="tab">STOCH</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#rsi" (click)="printRSI(rsiData)" data-toggle="tab">RSI</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#adx" (click)="printADX(adxData)" data-toggle="tab">ADX</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#cci" (click)="printCCI(cciData)" data-toggle="tab">CCI</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#bbands" (click)="printBBANDS(bbandsLower,bbandsMiddle,bbandsUpper)" data-toggle="tab">BBANDS</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#macd" (click)="printMACD(macdData)" data-toggle="tab">MACD</a>
+                      </li>
+
+                    </ul>
+                    </div>
+                    <div *ngIf='chartError' style="padding-top:100px;">
+                        <div  class="alert alert-danger" style="width:100%;" role="alert">
+                            <strong>Error!</strong> Chart data not available.
+                        </div>
+                    </div>
+                    <div *ngIf="loadingGraphs" style="padding-top:100px;">
+                        <div class="progress" >
+                          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%; height:100%;"></div>
+                      </div>
+                      </div>
+                    <div id='chartTabContent' class="tab-content" [hidden]="loadingGraphs || !indicatorData.Price || !indicatorData.SMA || !indicatorData.EMA || !indicatorData.RSI || !indicatorData.CCI || !indicatorData.MACD || !indicatorData.STOCH1 || !indicatorData.BBANDSLower || !indicatorData.ADX">
+
+                        <div class="tab-pane" id="sma">
+
+                          <div id="smachart">
+
+                          </div>
+
+                        </div>
+
+                      <div class="tab-pane" id="ema">
+
+                              <div id="emachart">
+
+                              </div>
+
+                            </div>
+                            <div class="tab-pane" id="rsi">
+
+                                 <div id="rsichart">
+
+                                 </div>
+
+                               </div>
+                               <div class="tab-pane" id="adx">
+
+                                   <div id="adxchart">
+
+                                   </div>
+
+                                 </div>
+                                 <div class="tab-pane" id="cci">
+
+                                     <div id="ccichart">
+
+                                  </div>
+
+                               </div>
+                               <div class="tab-pane" id="macd">
+
+                                   <div id="macdchart">
+
+                                </div>
+
+                             </div>
+                             <div class="tab-pane" id="stoch">
+
+                               <div id="stochchart">
+
+                            </div>
+
+                         </div>
+                         <div class="tab-pane" id="bbands">
+
+                           <div id="bbandschart">
+
+                        </div>
+
+                     </div>
+                     <div class="tab-pane active"  id="price">
+
+                       <div id="pricechart">
+
+                    </div>
+
+
+                 </div>
+                 </div>
+                </div>
+
+
+
+                  </div>
+                </div>
+                <div class="tab-pane" id="news">
+                    <div *ngIf='newsError' style="padding-top:100px;">
+                        <div  class="alert alert-danger" style="width:100%;" role="alert">
+                            <strong>Error!</strong> news data not available.
+                        </div>
+                    </div>
+                    <div *ngIf='!newsError'>
+                    <div *ngFor="let item of stockNews; let i=index">
+                        <div *ngIf="i<5">
+                        <div class="well" style="background-color:#EFEFEF;">
+                        <h3><a href='{{item.link}}'>{{item.title}}</a></h3><br/>
+                        <h3>Author: {{item.author}}</h3><br/>
+                        <h3>Date: {{item.pubDate}}</h3><br/>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="history">
+                    <div *ngIf='historyError' style="padding-top:100px;">
+                        <div  class="alert alert-danger" style="width:100%;" role="alert">
+                            <strong>Error!</strong> news data not available.
+                        </div>
+                    </div>
+                  <div *ngIf="!historyError">
+                  <div id="historychartcontainer" style="height: 500px;">
+
+                  </div>
+                  </div>
+                </div>
+                  </div>
+                </div>
+              </div>
+        </ngx-item>
+
+  </ngx-carousel>
+  </div>
+  </div>
+
+

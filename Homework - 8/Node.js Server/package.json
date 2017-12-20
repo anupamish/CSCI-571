@@ -1,0 +1,21 @@
+{
+  "name": "hw8",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "body-parser": "~1.18.2",
+    "cookie-parser": "~1.4.3",
+    "cors": "^2.8.4",
+    "debug": "~2.6.9",
+    "express": "~4.15.5",
+    "jade": "~1.11.0",
+    "morgan": "~1.9.0",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2",
+    "serve-favicon": "~2.4.5",
+    "xml2js-parser": "^1.1.1"
+  }
+}

@@ -1,0 +1,44 @@
+ autoRefresh(){
+    let newArraySaves=[];
+    let saves = Object.keys(this.savedItems);
+    for(let i=0; i<saves.length;i++){
+      this.http.get('http://stock-env.us-east-2.elasticbeanstalk.com/auto/'+this.savedItems[i].symbol)
+      .subscribe(
+        (responseFavs)=>{
+          let newSaves={
+            symbol: responseFavs['symbol'] ,
+            price: responseFavs['last_price'],
+            change: responseFavs['change'],
+            change_percent: responseFavs['change_percent'],
+            color: responseFavs['color'],
+            volume: responseFavs['volume'],
+            image: responseFavs['image'],
+          };
+          newArraySaves.push(newSaves);
+        });        
+    }
+    localStorage.setItem('favouriteStocks',JSON.stringify(newArraySaves));
+  }
+
+  autoRefresh(){
+    let newArraySaves=[];
+    let saves = Object.keys(this.savedItems);
+    for(let i=0; i<saves.length;i++){
+      this.http.get('http://stock-env.us-east-2.elasticbeanstalk.com/auto/'+this.savedItems[i].symbol)
+      .subscribe(
+        (responseFavs)=>{
+          let newSaves={
+            symbol: responseFavs['symbol'] ,
+            price: responseFavs['last_price'],
+            change: responseFavs['change'],
+            change_percent: responseFavs['change_percent'],
+            color: responseFavs['color'],
+            volume: responseFavs['volume'],
+            image: responseFavs['image'],
+          };
+          newArraySaves.push(newSaves);
+        });        
+    }
+    localStorage.removeItem('favouriteStocks');
+    localStorage.setItem('favouriteStocks',JSON.stringify(newArraySaves));
+  }
