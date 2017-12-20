@@ -19,7 +19,8 @@ AngularJS and Nodes.js,
 Serverless Applications,
 AWS Lambda and Google Functions
 
-[CSCI571-Course Website] (http://cs-server.usc.edu:45678/) - [Professor Marco Papa] (http://intersectworld.net/papa/)
+CSCI571-Course Website: http://cs-server.usc.edu:45678/
+Professor Marco Papa: http://intersectworld.net/papa/
 
 ## Homework - 3
 This homework required us to reproduce the provided page as closely as possible. We were not allowed to use any frameworks and required us to do it with **HTML, CSS** (and like the professor said, code as if you are in 1995).
